@@ -1,0 +1,10 @@
+<div class="recipe-card">
+    <div class="card-image">
+        <img src='{{ recipe.image }}' preload="auto">
+    </div>
+    <div class="card-info">
+        <p class="recipe-title">{{ recipe.title }}</p>
+        <p class="description">{{ recipe.readyInMinutes }} </p>
+        <a *ngIf="showViewButton" (click)="onRecipeClicked()" (click)="scrollToTop()"[routerLink]="['/recipe', recipe.title]" class="btn" >View Recipe</a>
+    </div>
+</div>

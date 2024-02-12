@@ -1,1 +1,113 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+    --background-color: #fff;
+    --background-light: #fff;
+    --shadow-color: rgba(0, 0, 0, 0.2);
+    --primary-color: #01de9c; 
+    --text-color: #0A0A0A;
+    --text-light: #575757;
+    --bar-color: black;
+}
+
+body {
+    font-size: 16px;
+    font-family: Roboto, "Helvetica Neue", sans-serif; 
+    padding-top: 35px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+body.dark-theme {
+    --background-color: rgb(51, 51, 51);
+    --text-color: rgb(214, 214, 214);
+    --text-light: rgb(191, 191, 191);
+    --bar-color: white;
+}
+
+a {
+    text-decoration: none;
+}
+
+img {
+    object-fit: cover;
+}
+
+.btn {
+    border: none;
+    outline: none;
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 0.75em 1em;
+    text-transform: uppercase;
+    font-size: 1em;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px var(--shadow-color);
+}
+
+.btn:hover {
+    box-shadow: 0 1px 3px var(--shadow-color);
+}
+
+.section {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 0vw;
+}
+
+.container {
+    margin: 0 auto;
+    padding-left: 15vw;
+}
+
+@media screen and (max-width: 1920px) {
+    .container {
+        margin: 0 auto;
+    }
+}
+
+@media screen and (max-width: 1280px) {
+    .container {
+        margin: 0 auto;
+        padding-left: 18vw;
+    }
+}
+
+@media screen and (max-width: 1050px) {
+    .container {
+        margin: 0 auto;
+        padding-left: 12vw;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .navbar .nav-links {
+        display: none;
+    }
+
+    .navbar .bar-button {
+        display: block;
+    }
+
+    .footer {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .footer .footer-section:nth-child(1) {
+        grid-column: span 4;
+    }
+
+    .footer .footer-section:nth-child(2),
+    .footer .footer-section:nth-child(3) {
+        grid-column: span 2;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .container {
+        padding-left: 3vw;
+    }
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

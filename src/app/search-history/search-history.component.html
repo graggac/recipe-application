@@ -1,0 +1,14 @@
+<div class="previous-searches">
+    <h2>Previous Searches</h2>
+    <div class="previous-searches-container">
+      <ng-container *ngFor="let search of searches; let index = index">
+        <div class="search-item" [style.animation-delay]="index * 0.1 + 's'">{{ search }}</div>
+      </ng-container>
+    </div>
+    <div class="search-box">
+      <input type="text" placeholder="Search..." (keyup.enter)="showPreviousSearches($event)" />
+      <button class="btn">
+        <fa-icon class="icon" [icon]="faMagnifyingGlass"></fa-icon>
+      </button>
+    </div>
+</div>

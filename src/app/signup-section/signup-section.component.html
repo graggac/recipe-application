@@ -1,0 +1,10 @@
+<section>
+    <div class="signup image">
+        <img src='../assets/images/pexels-cottonbro-studio-3338497.jpg'>
+    </div>
+    <div class="signup typography">
+        <h1 class="title">Your Culinary Playground</h1>
+        <div *ngFor="let item of list; let index = index" class="item">{{ item }}</div>
+        <button class="btn" (click)="loginWithRedirect()">Sign Up Now</button>
+    </div>
+</section>
