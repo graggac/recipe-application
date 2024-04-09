@@ -12,7 +12,7 @@ const routes: Routes = [
   { path: 'recipes', component: RecipesComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'signup-page', component: SignupPageComponent },
-  { path: 'recipe/:title', component: RecipeDetailComponent },
+  { path: 'recipe/:id', component: RecipeDetailComponent },
   { path: '**', redirectTo: '/home'}
 ];
 

@@ -1,22 +1,22 @@
-<div *ngIf="auth.user$ | async as user">
+<div *ngIf="auth.user$ | async as user" class="profile-container">
   <div class="profile-header">
     <div class="user-picture">
       <img [src]="user.picture" alt="User's profile picture" class="rounded-circle img-fluid profile-picture"/>
     </div>
     <div class="user-info">
-      <h2>Username: <br>{{ user.name }}</h2>
-      <p class="lead text-muted">Email: <br>{{ user.email }}</p>
+      <h2>{{ user.name }}</h2>
+      <p class="text-muted">{{ user.email }}</p>
     </div>
   </div>
 </div>
 
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Theme Settings</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <mat-slide-toggle [checked]="isDarkTheme" (change)="toggleDarkTheme()" [ngClass]="{ 'dark-theme': isDarkTheme }">Toggle Dark Theme</mat-slide-toggle>
-    </mat-card-content>
-  </mat-card>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Theme Settings</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-slide-toggle [checked]="isDarkTheme" (change)="toggleDarkTheme()" [ngClass]="{ 'dark-theme': isDarkTheme }" color="warn"><div class="toggle-text">Toggle Dark Theme</div></mat-slide-toggle>
+  </mat-card-content>
+</mat-card>
 
 

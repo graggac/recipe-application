@@ -1,401 +1,107 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, OnInit, Inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { faClock, faUserClock, faPlateWheat } from '@fortawesome/free-solid-svg-icons';
-
+import { Component, OnInit, Inject, OnDestroy} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { faClock, faUserClock, faPlateWheat, faHeartPulse } from '@fortawesome/free-solid-svg-icons';
+import { Subscription } from 'rxjs/internal/Subscription';
+import { SpoonacularService } from '../services/spoonacular.service';
+import { RecipeCardInfo } from '../models/recipe-card-info';
+import { forkJoin } from 'rxjs';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { ExtendedIngredient } from '../models/recipe-detail-info';
 
 @Component({
   selector: 'app-recipe-detail',
   templateUrl: './recipe-detail.component.html',
-  styleUrls: ['./recipe-detail.component.css']
+  styleUrls: ['./recipe-detail.component.scss']
 })
-export class RecipeDetailComponent implements OnInit {
-  recipe: any;
+export class RecipeDetailComponent implements OnInit, OnDestroy {
   faClock = faClock;
   faUserClock = faUserClock;
   faPlateWheat = faPlateWheat;
-
-  constructor(private route: ActivatedRoute, @Inject(DOCUMENT) private document: Document) {}
+  faHeartPulse = faHeartPulse;
+  id!: number;
+  recipe: any;
+  nutritionInfo: any;
+  recipeSubscription!: Subscription;
+  nutritionSubscription!: Subscription;
+  similarRecipes: any[] = [];
+  nutritionVisualizationHtml?: SafeHtml;
+  visualizationSubscription!: Subscription;
+  ingredientListInput: string = '';
+  
+  constructor(private route: ActivatedRoute, @Inject(DOCUMENT) private document: Document, private router: Router, private spoonacularService: SpoonacularService, private sanitizer: DomSanitizer) {}
 
   ngOnInit() {
     this.route.params.subscribe((params) => {
-      const title = params['title'];
-      this.recipe = this.findRecipeByTitle(title);
+      this.id = params["id"];
+      if (!this.id) {
+        this.router.navigateByUrl("/");
+      }
+      this.recipeSubscription = this.spoonacularService
+        .getRecipe(this.id)
+        .subscribe((res) => {
+          this.recipe = res;
+          this.updateNutrition();
+        });     
+    
+        this.spoonacularService.visualizeNutrition(this.ingredientListInput, 2).subscribe(
+          (visualizationHtml: SafeHtml) => {
+            this.nutritionVisualizationHtml = visualizationHtml;
+          },
+        );
+      
+      this.nutritionSubscription = this.spoonacularService
+        .getNutritionLabel(this.id)
+        .subscribe((res) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(res);
+          reader.onloadend = () => {
+            this.nutritionInfo = reader.result;
+          };
+        }); 
+
+        this.spoonacularService.getSimilarRecipes(this.id).subscribe((res: any[]) => {
+          const recipeIds = res.map((recipe: any) => recipe.id);
+          forkJoin(recipeIds.map((id: number) => this.spoonacularService.getRecipe(id))).subscribe((detailedRecipes: any[]) => {
+            this.similarRecipes = detailedRecipes;
+          });
+        });
+      
     });
+
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       this.document.body.classList.add('dark-theme');
     } else {
       this.document.body.classList.remove('dark-theme');
     }
+
   }
 
-  private findRecipeByTitle(title: string): any {
-    const recipes = [
-      {
-        title: 'Caesar Salad',
-        image: './assets/images/pexels-julie-aagaard-2097090.jpg',
-        ingredients: ['1 head of romaine lettuce, chopped',
-                      '1 cup croutons',
-                      '1/2 cup grated Parmesan cheese',
-                      '1/2 cup Caesar dressing',
-                      'Salt and black pepper to taste'],
-        description: 'A classic Caesar Salad recipe with crisp romaine lettuce, croutons, Parmesan cheese, and a creamy Caesar dressing.',
-        steps: ['Wash and chop the romaine lettuce into bite-sized pieces.',
-                'In a large bowl, toss the lettuce with croutons and grated Parmesan cheese.',
-                'Drizzle Caesar dressing over the salad and toss until evenly coated.',
-                'Season with salt and black pepper to taste.',
-                'Serve immediately and enjoy your delicious Caesar Salad!'],
-        cookTime: 'N/A',
-        prepTime: '15 minutes',
-        servings: '4 servings'
-      },
-      {
-        title: 'Cheeseburger',
-        image: './assets/images/front-view-burger-table.jpg',
-        ingredients: ['1 lb ground beef',
-                      '4 hamburger buns',
-                      '4 slices of cheddar cheese',
-                      'Lettuce leaves',
-                      'Tomato slices',
-                      'Onion slices',
-                      'Pickles',
-                      'Ketchup, mustard, and mayonnaise for condiments',
-                      'Salt and black pepper to taste'],
-        description: 'A classic cheeseburger with a juicy beef patty, melted cheese, fresh vegetables, and a soft bun.',
-        steps: ['Divide the ground beef into 4 equal portions and shape them into burger patties.',
-                'Season each patty with salt and black pepper on both sides.',
-                'Preheat a grill or skillet over medium-high heat.',
-                'Cook the burger patties for about 4-5 minutes per side, or until they reach your preferred level of doneness.',
-                'During the last minute of cooking, add a slice of cheddar cheese on each patty to melt.',
-                'Toast the hamburger buns on the grill or in a toaster.',
-                'Assemble the cheeseburgers by placing the patties on the bottom buns.',
-                'Top with lettuce, tomato slices, onion slices, and pickles.',
-                'Spread ketchup, mustard, and mayonnaise on the top buns.',
-                'Cover each burger with the top bun and serve immediately.',
-                'Enjoy your delicious homemade cheeseburgers!'],
-        cookTime: '15 minutes',
-        prepTime: '15 minutes',
-        servings: '6 servings'
-      },
-      {
-      title: 'Chicken Burrito',
-      image: './assets/images/two-tortillas.jpg',
-      ingredients: ['1 lb boneless, skinless chicken breasts, cooked and shredded',
-                    '1 cup cooked rice',
-                    '1 can (15 oz) black beans, drained and rinsed',
-                    '1 cup corn kernels (fresh, frozen, or canned)',
-                    '1 bell pepper, diced',
-                    '1 small red onion, finely chopped',
-                    '1 cup shredded cheddar cheese',
-                    '4 large flour tortillas',
-                    'Salsa, guacamole, sour cream, and cilantro for topping',
-                    'Salt and pepper to taste',
-                    'Mexican seasoning (cumin, chili powder, paprika) for seasoning the chicken'],
-      description: 'A flavorful chicken burrito with seasoned chicken, rice, beans, veggies, and your favorite toppings.',
-      steps: ['In a bowl, season the cooked and shredded chicken with salt, pepper, and Mexican seasoning to taste.',
-              'In a large skillet, sauté the bell pepper and red onion until softened.',
-              'Add the seasoned shredded chicken, cooked rice, black beans, and corn to the skillet. Cook until heated through.',
-              'Warm the flour tortillas in a dry pan or microwave.',
-              'Assemble the burritos by placing a portion of the chicken mixture in the center of each tortilla.',
-              'Top with shredded cheese and your favorite toppings such as salsa, guacamole, sour cream, and cilantro.',
-              'Fold the sides of the tortilla over the filling, then fold the bottom and roll tightly to form a burrito.',
-              'Repeat for the remaining burritos.',
-              'Serve the chicken burritos warm and enjoy!'],
-      cookTime: '15 minutes',
-      prepTime: '15 minutes',
-      servings: '5 servings'
-      },
-      {
-      title: 'Chicken Tikka Masala',
-      image: './assets/images/istockphoto-579767430-612x612.jpg',
-      ingredients: ['1.5 lbs boneless, skinless chicken thighs, cut into bite-sized pieces',
-                    '1 cup plain yogurt',
-                    '2 tablespoons ginger-garlic paste',
-                    '1 tablespoon garam masala',
-                    '1 tablespoon ground coriander',
-                    '1 tablespoon ground cumin',
-                    '1 teaspoon turmeric',
-                    '1 teaspoon chili powder',
-                    'Salt to taste',
-                    '2 tablespoons vegetable oil',
-                    '1 large onion, finely chopped',
-                    '1 can (14 oz) crushed tomatoes',
-                    '1 cup heavy cream',
-                    '1/4 cup chopped fresh cilantro for garnish',
-                    'Cooked basmati rice for serving',
-                    'Naan or roti for serving'
-                  ],
-      description: 'A rich and creamy chicken curry with tender chicken pieces marinated in flavorful spices.',
-      steps: ['In a bowl, mix yogurt, ginger-garlic paste, garam masala, coriander, cumin, turmeric, chili powder, and salt to create the marinade.',
-              'Add chicken pieces to the marinade, ensuring they are well-coated. Marinate for at least 2 hours or overnight in the refrigerator.',
-              'Preheat the oven to 400°F (200°C). Thread marinated chicken pieces onto skewers and bake for 20-25 minutes or until cooked through.',
-              'In a large pan, heat vegetable oil and sauté finely chopped onion until golden brown.',
-              'Add crushed tomatoes to the pan and cook for 5 minutes. Add the baked chicken pieces to the sauce.',
-              'Pour in heavy cream and simmer for an additional 10-15 minutes, stirring occasionally.',
-              'Season with additional salt if needed. Garnish with chopped cilantro.',
-              'Serve the Chicken Tikka Masala over cooked basmati rice and with naan or roti on the side.',
-              'Enjoy the delicious Chicken Tikka Masala!'],
-      cookTime: '40 minutes',
-      prepTime: '15 minutes (plus marinating time)',
-      servings: '4 servings'
-      },
-      {
-      title: 'Chocolate Cake',
-      image: './assets/images/pexels-oksana-d-3081657.jpg',
-      ingredients: ['2 cups all-purpose flour',
-                    '1 and 3/4 cups granulated sugar',
-                    '3/4 cup unsweetened cocoa powder',
-                    '2 teaspoons baking powder',
-                    '1 and 1/2 teaspoons baking soda',
-                    '1 teaspoon salt',
-                    '2 large eggs',
-                    '1 cup whole milk',
-                    '1/2 cup vegetable oil',
-                    '2 teaspoons pure vanilla extract',
-                    '1 cup boiling water'],
-      description: "A moist and decadent chocolate cake that's perfect for any occasion.",
-      steps: ['Preheat the oven to 350°F (175°C). Grease and flour two 9-inch round cake pans.',
-              'In a large bowl, sift together flour, sugar, cocoa powder, baking powder, baking soda, and salt.',
-              'Add eggs, milk, oil, and vanilla extract to the dry ingredients. Mix until well combined.',
-              'Stir in boiling water until the batter is smooth. The batter will be thin, but that is okay.',
-              'Pour the batter evenly into the prepared pans.',
-              'Bake in the preheated oven for 30 to 35 minutes, or until a toothpick inserted into the center comes out clean.',
-              'Allow the cakes to cool in the pans for 10 minutes, then transfer them to a wire rack to cool completely.',
-              'Once the cakes are cool, you can frost and decorate as desired.',
-              'Serve and enjoy the delicious homemade chocolate cake!'],
-      cookTime: '30-35 minutes',
-      prepTime: '15 minutes',
-      servings: '12 servings'
-      },
-      {
-      title: 'Greek Gyro',
-      image: './assets/images/istockphoto-1269227343-612x612.jpg',
-      ingredients: ['1 lb lamb or chicken, thinly sliced',
-                    '1/4 cup olive oil',
-                    '3 cloves garlic, minced',
-                    '1 teaspoon dried oregano',
-                    '1 teaspoon ground cumin',
-                    'Salt and pepper to taste',
-                    'Pita bread or flatbreads',
-                    'Tzatziki sauce (store-bought or homemade)',
-                    'Cherry tomatoes, halved',
-                    'Red onion, thinly sliced',
-                    'Cucumber, thinly sliced',
-                    'Fresh lettuce, shredded'],
-      description: 'A delicious and authentic Greek gyro made with seasoned meat, fresh veggies, and tzatziki sauce.',
-      steps: ['In a bowl, mix olive oil, minced garlic, oregano, cumin, salt, and pepper to create the marinade.',
-              'Add the sliced lamb or chicken to the marinade, ensuring the meat is well-coated. Marinate for at least 30 minutes or overnight for better flavor.',
-              'Heat a skillet or grill pan over medium-high heat. Cook the marinated meat until fully cooked and slightly crispy on the edges.',
-              'Warm the pita bread or flatbreads in the skillet or oven.',
-              'Assemble the gyro by placing a generous amount of cooked meat on the warmed bread.',
-              'Top with cherry tomatoes, red onion, cucumber, and shredded lettuce.',
-              'Drizzle tzatziki sauce over the gyro.',
-              'Fold or roll the gyro and secure with a toothpick if needed.',
-              'Serve immediately and enjoy the authentic flavors of a Greek gyro!'],
-      cookTime: '15 minutes',
-      prepTime: '30 minutes (including marination)',
-      servings: '4 servings'
-      },
-      {
-      title: 'Lasagna',
-      image: './assets/images/pexels-daniele-sgura-4162496.jpg',
-      ingredients: ['1 pound ground beef',
-                    '1/2 pound Italian sausage',
-                    '1 onion, finely chopped',
-                    '3 cloves garlic, minced',
-                    '1 can (28 ounces) crushed tomatoes',
-                    '1 can (14 ounces) diced tomatoes',
-                    '2 tablespoons tomato paste',
-                    '2 teaspoons dried basil',
-                    '1 teaspoon dried oregano',
-                    '1/2 teaspoon salt',
-                    '1/4 teaspoon black pepper',
-                    '12 lasagna noodles, cooked according to package instructions',
-                    '2 cups ricotta cheese',
-                    '1 large egg',
-                    '3 cups shredded mozzarella cheese',
-                    '1 cup grated Parmesan cheese',
-                    'For béchamel sauce:',
-                    '4 tablespoons unsalted butter',
-                    '1/4 cup all-purpose flour',
-                    '4 cups whole milk',
-                    '1/2 teaspoon salt',
-                    '1/4 teaspoon ground nutmeg'],
-      description: 'A comforting and flavorful classic lasagna with layers of pasta, rich meat sauce, creamy béchamel, and melted cheese.',
-      steps: ['Preheat the oven to 375°F (190°C).',
-              'In a large skillet, cook ground beef and Italian sausage over medium heat until browned. Add chopped onion and minced garlic, cooking until onion is softened.',
-              'Stir in crushed tomatoes, diced tomatoes, tomato paste, basil, oregano, salt, and pepper. Simmer for 20-30 minutes, stirring occasionally.',
-              'In a separate saucepan, prepare the béchamel sauce. Melt butter, whisk in flour, and gradually add milk while whisking constantly. Cook until the sauce thickens. Season with salt and nutmeg.',
-              'In a bowl, combine ricotta cheese and egg.',
-              'In a greased baking dish, layer lasagna noodles, meat sauce, ricotta mixture, mozzarella, and Parmesan. Repeat the layers, finishing with a layer of meat sauce on top.',
-              'Pour the béchamel sauce over the top layer and spread evenly.',
-              'Bake in the preheated oven for 45-50 minutes or until the lasagna is hot and bubbly, and the top is golden brown.',
-              'Allow the lasagna to rest for 15 minutes before serving.',
-              'Serve slices of classic lasagna and enjoy!'],
-      cookTime: '45-50 minutes',
-      prepTime: '30 minutes',
-      servings: '8 servings'
-      },
-      {
-      title: 'Lobster Bisque',
-      image: './assets/images/istockphoto-916518986-612x612.jpg',
-      ingredients: ['2 lobsters (about 1 1/2 pounds each)',
-                    '1/4 cup unsalted butter',
-                    '1 onion, chopped',
-                    '2 carrots, chopped',
-                    '2 celery stalks, chopped',
-                    '2 cloves garlic, minced',
-                    '1/4 cup all-purpose flour',
-                    '1/4 cup tomato paste',
-                    '1/2 cup brandy or dry sherry',
-                    '4 cups fish or seafood stock',
-                    '2 cups chicken broth',
-                    '1 cup heavy cream',
-                    '1/2 teaspoon paprika',
-                    'Salt and pepper to taste',
-                    'Fresh chives or parsley for garnish'],
-      description: "Indulge in the rich and creamy flavors of lobster bisque, a classic seafood soup that's perfect for a special occasion.",
-      steps: ['Boil the lobsters in a large pot of salted water until fully cooked. Remove the meat from the shells and set aside. Save the shells for later use in the broth.',
-              'In a large soup pot, melt butter over medium heat. Add chopped onion, carrots, celery, and garlic. Cook until vegetables are softened.',
-              'Stir in the flour and tomato paste, cooking for an additional 2 minutes to eliminate the raw flour taste.',
-              'Pour in the brandy or sherry, scraping the bottom of the pot to release any browned bits.',
-              'Add the lobster shells, fish or seafood stock, and chicken broth to the pot. Bring to a simmer and let it cook for about 30 minutes.',
-              'Use an immersion blender to blend the soup until smooth. Alternatively, carefully transfer the soup to a blender in batches.',
-              'Strain the soup through a fine-mesh sieve to remove any remaining solids, pressing down to extract maximum flavor.',
-              'Return the soup to the pot and add the heavy cream, paprika, salt, and pepper. Simmer for an additional 10-15 minutes.',
-              'Chop the reserved lobster meat into bite-sized pieces and add it to the soup. Cook for a few more minutes until the lobster is heated through.',
-              'Serve the lobster bisque hot, garnished with fresh chives or parsley.',
-              'Enjoy this luxurious lobster bisque!'],
-      cookTime: '1 hour',
-      prepTime: '30 minutes',
-      servings: '4-6 servings'
-      },
-      {
-      title: 'Margherita Pizza',
-      image: './assets/images/pexels-vincent-rivaud-2471171.jpg',
-      ingredients: ['Pizza dough (homemade or store-bought)',
-                    '1/2 cup pizza sauce',
-                    '8 oz fresh mozzarella cheese, sliced',
-                    'Fresh basil leaves',
-                    '2 tablespoons olive oil',
-                    'Salt and pepper to taste',
-                    'Cornmeal or flour for dusting'],
-      description: 'Create the perfect Margherita pizza with fresh ingredients and a crispy crust. This classic pizza is a delight for pizza lovers!',
-      steps: ['Preheat your oven to the highest temperature (usually around 475-500°F or 245-260°C). If you have a pizza stone, place it in the oven during preheating.',
-              'Roll out the pizza dough on a lightly floured surface to your desired thickness.',
-              'If using a pizza stone, transfer the rolled-out dough to a pizza peel or an inverted baking sheet dusted with cornmeal or flour. If not using a stone, place the dough on a parchment-lined baking sheet.',
-              'Spread an even layer of pizza sauce over the dough, leaving a small border around the edges for the crust.',
-              'Arrange slices of fresh mozzarella evenly over the sauce.',
-              'Add fresh basil leaves on top of the cheese. Drizzle olive oil over the pizza, and season with salt and pepper to taste.',
-              'If using a pizza stone, carefully transfer the pizza to the preheated stone in the oven. If using a baking sheet, place it directly in the oven.',
-              'Bake for about 10-12 minutes or until the crust is golden and the cheese is bubbly and slightly browned.',
-              'Remove the pizza from the oven and let it cool for a few minutes before slicing.',
-              'Serve your homemade Margherita pizza hot and enjoy!'],
-      cookTime: '10-12 minutes',
-      prepTime: '20 minutes',
-      servings: '2-4 servings'
-      },
-      {
-      title: 'Spaghetti and Meatballs',
-      image: './assets/images/fettuccine-pasta-with-meatballs-tomato-sauce.jpg',
-      ingredients: ['1 pound ground beef',
-                    '1/2 cup breadcrumbs',
-                    '1/4 cup grated Parmesan cheese',
-                    '1/4 cup chopped fresh parsley',
-                    '1 large egg',
-                    '2 cloves garlic, minced',
-                    'Salt and pepper to taste',
-                    '1 pound spaghetti',
-                    '4 cups marinara sauce (homemade or store-bought)',
-                    'Fresh basil leaves for garnish'],
-      description: 'A comforting and hearty dish featuring homemade meatballs served with perfectly cooked spaghetti and marinara sauce.',
-      steps: ['Preheat your oven to 375°F (190°C).',
-              'In a large bowl, combine ground beef, breadcrumbs, Parmesan cheese, chopped parsley, egg, minced garlic, salt, and pepper. Mix until well combined.',
-              'Form the mixture into meatballs, about 1 to 1.5 inches in diameter, and place them on a baking sheet lined with parchment paper.',
-              'Bake the meatballs in the preheated oven for 20-25 minutes or until cooked through and browned on the outside.',
-              'While the meatballs are baking, cook the spaghetti according to the package instructions. Drain and set aside.',
-              'In a large saucepan, heat the marinara sauce over medium heat. Once the meatballs are done, add them to the sauce and let them simmer for an additional 10 minutes.',
-              'Serve the meatballs and marinara sauce over the cooked spaghetti.',
-              'Garnish with fresh basil leaves and additional Parmesan cheese if desired.',
-              'Enjoy your delicious homemade Spaghetti and Meatballs!'],
-      cookTime: '20-25 minutes (meatballs)',
-      prepTime: '15 minutes',
-      servings: '4 servings'
-      },
-      {
-      title: 'Sushi',
-      image: './assets/images/pexels-marvin-sacdalan-13065176.jpg',
-      ingredients: ['2 cups sushi rice',
-                    '2 1/2 cups water',
-                    '1/2 cup rice vinegar',
-                    '2 tablespoons sugar',
-                    '1 teaspoon salt',
-                    'Nori (seaweed) sheets',
-                    'Assorted fillings (e.g., fresh fish, avocado, cucumber, crab sticks)',
-                    'Soy sauce for dipping',
-                    'Pickled ginger and wasabi for serving'],
-      description: 'Create your own sushi rolls at home with this easy and delicious recipe. Customize the fillings to your liking!',
-      steps: ['Rinse the sushi rice under cold water until the water runs clear. Combine rice and water in a rice cooker and cook according to the cooker\'s instructions.',
-              'While the rice is cooking, mix rice vinegar, sugar, and salt in a small bowl. Heat the mixture in the microwave for 30 seconds, stirring until sugar and salt dissolve.',
-              'Transfer the cooked rice to a large bowl and gently fold in the vinegar mixture. Allow the rice to cool to room temperature.',
-              'Place a sheet of nori on a bamboo sushi rolling mat. Wet your hands to prevent sticking and spread a thin layer of rice over the nori, leaving a small border at the top.',
-              'Add your desired fillings in the center of the rice.',
-              'Roll the sushi tightly using the bamboo mat as a guide. Seal the edge with a little water.',
-              'Slice the roll into bite-sized pieces using a sharp knife.',
-              'Repeat the process with remaining nori sheets and fillings.',
-              'Serve the sushi rolls with soy sauce, pickled ginger, and wasabi.',
-              'Enjoy your homemade sushi!'],
-      cookTime: 'Varies (depending on rice cooker)',
-      prepTime: '30 minutes',
-      servings: '4 servings'
-      },
-      {
-      title: 'Tacos',
-      image: './assets/images/pexels-los-muertos-crew-8448340.jpg',
-      ingredients: ['1 lb ground beef',
-                    '1 small onion, finely chopped',
-                    '2 cloves garlic, minced',
-                    '1 packet taco seasoning',
-                    '1/2 cup water',
-                    '8 small taco shells',
-                    '1 cup shredded lettuce',
-                    '1 cup diced tomatoes',
-                    '1 cup shredded cheddar cheese',
-                    'Sour cream and salsa for topping',
-                    'Fresh cilantro for garnish (optional)'],
-      description: 'Make taco night a family favorite with these classic beef tacos. Customize with your favorite toppings!',
-      steps: ['In a skillet over medium heat, cook the ground beef until browned. Drain excess fat.',
-              'Add chopped onion and minced garlic to the skillet. Cook until onion is softened.',
-              'Stir in the taco seasoning and water. Simmer for 5-7 minutes or until the mixture thickens.',
-              'While the beef mixture is simmering, warm the taco shells in the oven according to package instructions.',
-              'Assemble the tacos by spooning the beef mixture into each taco shell.',
-              'Top with shredded lettuce, diced tomatoes, and shredded cheddar cheese.',
-              'Add a dollop of sour cream and salsa on top.',
-              'Garnish with fresh cilantro if desired.',
-              'Serve immediately and enjoy your delicious beef tacos!'],
-      cookTime: '15 minutes',
-      prepTime: '10 minutes',
-      servings: '4 servings'
-      },
-      
-     
-    ];
-  
-    const foundRecipe: any = {
-      stepNumbers: []
-    };
-  
-    const foundRecipeDetails = recipes.find((recipe) => recipe.title === title);
-  
-    if (foundRecipeDetails) {
-      Object.assign(foundRecipe, foundRecipeDetails);
-  
-      if (foundRecipeDetails.steps) {
-        foundRecipe.stepNumbers = Array.from({ length: foundRecipeDetails.steps.length }, (_, index) => `Step ${index + 1}`);
-      }
+  onRecipeCardClicked(recipe: RecipeCardInfo) {
+    this.router.navigate(['/recipe', recipe.id]);
+  }
+
+  ngOnDestroy() {
+    this.recipeSubscription.unsubscribe();
+    this.nutritionSubscription.unsubscribe();
+    this.visualizationSubscription.unsubscribe();
+  }
+
+  updateNutrition() {
+    const ingredientList = this.recipe.extendedIngredients
+      .map((ingredient: ExtendedIngredient) => ingredient.original)
+      .join('\n');
+    const servings = this.recipe.servings;
+
+    if (this.visualizationSubscription) {
+      this.visualizationSubscription.unsubscribe();
     }
-  
-    return foundRecipe;
+
+    this.visualizationSubscription = this.spoonacularService.visualizeNutrition(ingredientList, servings).subscribe(
+      (visualizationHtml: SafeHtml) => {
+        this.nutritionVisualizationHtml = visualizationHtml;
+      }
+    );
   }
 }

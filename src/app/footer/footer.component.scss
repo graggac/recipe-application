@@ -10,6 +10,12 @@
 .container {
     padding-inline: 12vw;
 }
+
+.footer-section {
+    display: grid;
+    gap: 1rem;
+    align-items: center;
+}
 .footer-section p {
     opacity: .9;
     margin-bottom: .5em;

@@ -1,11 +1,21 @@
+@import '@angular/material/theming';
+
+@mixin theme-color-grabber($theme) {
+
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+}
+
 :root {
     --background-color: #fff;
     --background-light: #fff;
     --shadow-color: rgba(0, 0, 0, 0.2);
-    --primary-color: #01de9c; 
+    --primary-color: #01de9c;
     --text-color: #0A0A0A;
     --text-light: #575757;
     --bar-color: black;
+    --hover-color: #ececec;
 }
 
 body {
@@ -21,6 +31,7 @@ body.dark-theme {
     --text-color: rgb(214, 214, 214);
     --text-light: rgb(191, 191, 191);
     --bar-color: white;
+    --hover-color: rgb(46, 46, 46);
 }
 
 a {

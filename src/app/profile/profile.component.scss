@@ -1,0 +1,48 @@
+.profile-container {
+  margin: 2em;
+}
+
+profile-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.rounded-circle {
+  border-radius: 100px;
+}
+
+.user-picture {
+  margin-right: 1em;
+}
+
+.user-info h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.user-info p {
+  margin: 0;
+  font-size: 14px;
+}
+
+mat-card {
+    box-shadow: 0 5px 10px var(--shadow-color);
+    padding: 1em;
+    border-radius: 5px;
+    border-left: .5em solid var(--primary-color);
+    background-color: var(--background-color);
+    margin-top: 1em;
+    display: flex;
+    gap: 1em;
+    margin-bottom: 35%;
+    margin-top: 5%;
+}
+
+mat-card-title {
+  color: var(--text-color);
+}
+
+.toggle-text {
+  color: var(--text-color);
+}

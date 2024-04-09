@@ -1,6 +1,12 @@
-<app-search-history (searchEvent)="onSearch($event)"></app-search-history>
-<div class="recipes-container">
-  <div *ngFor="let recipe of filteredRecipes">
-    <app-recipe-card [recipe]="recipe" (recipeClicked)="onRecipeCardClicked($event)"></app-recipe-card>
-  </div>
-</div>
+<app-search (searchEvent)="onSearch($event)"></app-search>
+<button class="toggle" mat-raised-button (click)="drawer.toggle()">Toggle filters</button>
+<mat-drawer-container>
+  <mat-drawer #drawer mode="side">
+    <app-advanced-filters (onSelect)="selectFilter($event)" (onClearFilters)="fetchRandomRecipes()"></app-advanced-filters>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div class="recipes-container">
+      <app-recipe-card [recipe]="recipe" *ngFor="let recipe of recipes" (recipeClicked)="onRecipeCardClicked($event)"></app-recipe-card>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

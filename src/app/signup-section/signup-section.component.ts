@@ -4,7 +4,7 @@ import { AuthService } from '@auth0/auth0-angular';
 @Component({
   selector: 'app-signup-section',
   templateUrl: './signup-section.component.html',
-  styleUrls: ['./signup-section.component.css']
+  styleUrls: ['./signup-section.component.scss']
 })
 export class SignupSectionComponent implements OnInit{
   list: string[] = ["We welcome food enthusiasts of all backgrounds and experience levels.",

@@ -1,0 +1,30 @@
+
+    <mat-form-field>
+        <mat-label for="cuisineSelect">Cuisine</mat-label>
+        <mat-select #matRef multiple id="cuisineSelect">
+            <mat-option *ngFor="let cuisine of cuisines" [value]="cuisine" (click)="selectFilter('cuisine', cuisine)"> {{ cuisine }} </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label for="dietSelect">Diets</mat-label>
+        <mat-select #matRef multiple id="dietSelect">
+            <mat-option *ngFor="let diet of diets" [value]="diet" (click)="selectFilter('diet', diet)"> {{ diet }} </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label for="intoleranceSelect">Intolerances</mat-label>
+        <mat-select #matRef multiple id="intoleranceSelect">
+            <mat-option *ngFor="let intolerance of intolerances" [value]="intolerance" (click)="selectFilter('intolerances', intolerance)"> {{ intolerance }} </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label for="typeSelect">Types</mat-label>
+        <mat-select #matRef multiple id="typeSelect">
+            <mat-option *ngFor="let type of types" [value]="type" (click)="selectFilter('type', type)"> {{ type }} </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <button mat-button color="accent" type="button" (click)="clean()">Clear All Filters</button>

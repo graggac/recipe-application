@@ -1,44 +1,62 @@
 <div class="recipe-page">
     <section class="recipe-hero">
         <div class="image-container">
-            <img [src]="recipe.image" alt="{{ recipe.title }}" class="recipe-image">
+            <img [src]="recipe.image" class="recipe-image">
         </div>
         <article class="recipe-info">
-            <h2>{{ recipe.title }}</h2>
-            <h3>Description</h3>
-            <p>{{ recipe.description }}</p>
+            <h2 class="title">{{ recipe.title }}</h2>
+            <p [innerHTML]="recipe.summary"></p>
             <div class="recipe-icons">
                 <article>
-                    <fa-icon class="icon" [icon]="faUserClock"></fa-icon>
-                    <h5>Prep Time</h5>
-                    <p>{{ recipe.prepTime }}</p>
-                </article>
-                <article>
                     <fa-icon class="icon" [icon]="faClock"></fa-icon>
-                    <h5>Cook Time</h5>
-                    <p> {{ recipe.cookTime }}</p>
+                    <h5>Ready in</h5>
+                    <p>{{ recipe.readyInMinutes }} minutes</p>
                 </article>
                 <article>
                     <fa-icon class="icon" [icon]="faPlateWheat"></fa-icon>
                     <h5>Serving Size</h5>
                     <p>{{ recipe.servings }}</p>
                 </article>
+                <article>
+                    <fa-icon class="icon" [icon]="faHeartPulse"></fa-icon>
+                    <h5>Health Score</h5>
+                    <p>{{ recipe.healthScore }}%</p>
+                </article>
             </div>
         </article>
-        
     </section>
     <section class="recipe-content">
-        <article>
+        <article *ngIf="recipe.analyzedInstructions && recipe.analyzedInstructions.length > 0">
             <h4 class="step-title">Steps</h4>
-            <div *ngFor="let stepNumber of recipe.stepNumbers; let i = index" class="steps">
-                <span class="step-number">{{ stepNumber }}<div class="line"></div></span>{{ recipe.steps[i] }}
+            <div *ngFor="let step of recipe.analyzedInstructions[0]?.steps" class="steps">
+                <span class="step-number">Step {{ step.number }}<div class="line"></div></span>{{ step.step }}
             </div>
         </article>
-        <article class="second-column">
+        <article *ngIf="!recipe.analyzedInstructions || recipe.analyzedInstructions.length === 0">
+            <h4 class="step-title">Steps</h4>
+            <p>No steps available.</p>
+        </article>
+        <article *ngIf="recipe.extendedIngredients && recipe.extendedIngredients.length > 0" class="second-column">
             <div>
                 <h4>Ingredients</h4>
-                <p *ngFor="let ingredient of recipe.ingredients" class="ingredient-list">{{ ingredient }}</p>
+                <p *ngFor="let ingredient of recipe.extendedIngredients" class="ingredient-list line">{{ ingredient.original }}</p>
             </div>
         </article>
+        <article *ngIf="!recipe.extendedIngredients || recipe.extendedIngredients.length === 0">
+            <h4>Ingredients</h4>
+            <p>No ingredients available.</p>
+        </article>
+    </section>
+        <h4>Nutrition Facts</h4>
+        <div [innerHtml]="nutritionVisualizationHtml" alt="Nutrition Visualization" class="nutrition-visualization"></div>
+    <section>
+        <div  *ngIf="similarRecipes && similarRecipes.length > 0">
+            <h4>Similar Recipes</h4>
+            <div class="recipes-container">
+                <app-recipe-card *ngFor="let similarRecipe of similarRecipes" [recipe]="similarRecipe" (recipeClicked)="onRecipeCardClicked($event)"></app-recipe-card>
+            </div>
+        </div>
+        <div *ngIf="!similarRecipes || similarRecipes.length === 0">
+        </div>
     </section>
 </div>

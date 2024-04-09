@@ -1,0 +1,51 @@
+@use '@angular/material' as mat;
+@import '@angular/material/theming';
+@import '../styles';
+
+@include mat.core();
+
+$md-mcgpalette0: (
+    50 : #e1fbf3,
+    100 : #b3f5e1,
+    200 : #80efce,
+    300 : #4de8ba,
+    400 : #27e3ab,
+    500 : #01de9c,
+    600 : #01da94,
+    700 : #01d58a,
+    800 : #01d180,
+    900 : #00c86e,
+    A100 : #f1fff8,
+    A200 : #beffde,
+    A400 : #8bffc4,
+    A700 : #71ffb7,
+    contrast: (
+        50 : rgba(black, 0.87),
+        100 : rgba(black, 0.87),
+        200 : rgba(black, 0.87),
+        300 : rgba(black, 0.87),
+        400 : rgba(white, 0.87),
+        500 : rgba(black, 0.87),
+        600 : rgba(black, 0.87),
+        700 : rgba(black, 0.87),
+        800 : rgba(black, 0.87),
+        900 : rgba(white, 0.87),
+        A100 : rgba(black, 0.87),
+        A200 : rgba(black, 0.87),
+        A400 : rgba(black, 0.87),
+        A700 : rgba(black, 0.87),
+    )
+);
+
+$theme-primary: mat.define-palette($md-mcgpalette0, 600);
+$theme-accent:  mat.define-palette($md-mcgpalette0, 400, 900);
+$theme-warn:    mat.define-palette($md-mcgpalette0, 50);
+$theme: mat-light-theme((
+  color: (
+    primary: $theme-primary,
+    accent: $theme-accent,
+    warn: $theme-warn,
+  ),
+));
+
+@include angular-material-theme($theme);

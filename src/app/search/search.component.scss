@@ -1,0 +1,33 @@
+.search-box {
+  padding-top: 2.5em;
+  width: 100%;
+}
+
+::ng-deep .mdc-notched-outline > * {
+  border-color: var(--text-color) !important;
+}
+
+::ng-deep .mdc-text-field--focused .mdc-notched-outline > * {
+  border-color: var(--primary-color) !important;
+}
+
+mat-label {
+  color: var(--text-color);
+}
+
+::ng-deep .mdc-text-field--focused mat-label {
+  color: var(--primary-color) !important;
+}
+
+input {
+  color: var(--text-color) !important;
+}
+
+mat-option {
+  color: var(--text-color) !important;
+  background-color: var(--background-color) !important;
+  &:hover {
+    background-color: var(--hover-color) !important;
+  }
+  border-color: var(--background-color) !important;
+}

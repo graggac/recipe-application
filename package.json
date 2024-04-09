@@ -26,6 +26,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.4.0",
     "@fortawesome/free-regular-svg-icons": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@material/notched-outline": "^15.0.0-canary.bc9ae6c9c.0",
     "ngx-highlight-js": "^17.0.0",
     "ngx-highlightjs": "^10.0.0",
     "rxjs": "~7.8.0",

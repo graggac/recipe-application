@@ -1,26 +1,25 @@
-
-    <section>
-        <div class="navbar container">
-            <a routerLink="/home" class="logo">Recipe<span>App</span>Demo</a>
-            <div class="nav-links">
-                <a routerLink="/home">Home</a>
-                <a routerLink="/recipes">Recipes</a>
-                <a routerLink="/profile">Profile</a>
-            </div>
-            <div *ngIf="auth.isAuthenticated$ | async else loggedOut">
-                <button class="btn btn-warning" (click)="auth.logout()">Log Out</button>
-            </div>
-            <ng-template #loggedOut>
-                <button class="btn btn-primary" (click)="auth.loginWithRedirect()">Log in</button>
-            </ng-template>
-            <button class="bar-button" [class.active]="isButtonActive" [class.active]="isSidebarOpen" (click)="toggleButtonState()">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </button>
+<section>
+    <div class="navbar container">
+        <a routerLink="/home" class="logo"><span>Bowl</span>Bytes <span><fa-icon class="icon" [icon]="faBowlRice"></fa-icon></span></a>
+        <div class="nav-links">
+            <a routerLink="/home">Home</a>
+            <a routerLink="/recipes">Recipes</a>
+            <a routerLink="/profile">Profile</a>
         </div>
-        
-        <div class="sidebar" *ngIf="isSidebarVisible" (click)="closeSidebar()">
-            <app-side-bar></app-side-bar>
+        <div *ngIf="auth.isAuthenticated$ | async else loggedOut">
+            <button class="btn btn-warning" (click)="auth.logout()">Log Out</button>
         </div>
-    </section>
+        <ng-template #loggedOut>
+            <button class="btn btn-primary" (click)="auth.loginWithRedirect()">Log in</button>
+        </ng-template>
+        <button class="bar-button" [class.active]="isButtonActive" [class.active]="isSidebarOpen" (click)="toggleButtonState()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </button>
+    </div>
+    
+    <div class="sidebar" *ngIf="isSidebarVisible" (click)="closeSidebar()">
+        <app-side-bar></app-side-bar>
+    </div>
+</section>

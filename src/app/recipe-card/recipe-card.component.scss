@@ -11,14 +11,14 @@
       position: relative;
       isolation: isolate;
       border-radius: 5px;
-      overflow: hidden;
       box-shadow: 0 5px 15px var(--shadow-color);
       background-color: var(--background-color);
       opacity: 0;
       animation: fadeIn 1.75s forwards;
       height: 385px;
       width: 280px;
-      margin: 0 auto;
+      margin: auto;
+      padding: auto;
     }
     
   .card-info {
@@ -26,6 +26,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between
+      
     }
     
   .card-image {
@@ -42,6 +43,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
   }
     
   .recipe-title {
@@ -52,7 +55,7 @@
       margin-top: 0.25em;
     }
     
-  .description {
+  .readyInMinutes {
       color: var(--text-light);
       font-size: 0.9em;
       letter-spacing: 1px;
@@ -69,5 +72,9 @@
       bottom: 12px;
       left: 1;
   }
+
+  .mat-mdc-button:not(:disabled) {
+    color: var(--primary-color);
+}
     
   

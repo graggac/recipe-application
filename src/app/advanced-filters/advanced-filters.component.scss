@@ -1,0 +1,22 @@
+::ng-deep mat-form-field > * {
+    color: var(--text-color) !important;
+    background-color: var(--background-color) !important;
+}
+
+mat-label {
+    color: var(--text-color) !important;
+}
+  
+mat-option {
+    color: var(--text-color) !important;
+    background-color: var(--background-color) !important;
+    border-color: var(--background-color) !important;
+}
+  
+mat-select  {
+    color: var(--text-color) !important;
+}
+  
+::ng-deep .ng-trigger {
+    background-color: var(--background-color) !important;
+}

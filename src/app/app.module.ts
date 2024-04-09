@@ -15,15 +15,18 @@ import { ProfileComponent } from './profile/profile.component';
 import { ThemeService } from './services/themes.service';
 import { AngularMaterialModule } from './angular-material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SearchHistoryComponent } from './search-history/search-history.component';
+import { SearchComponent } from './search/search.component';
 import { RecipesComponent } from './recipes/recipes.component';
 import { SignupPageComponent } from './signup-page/signup-page.component';
 import { RecipeCardComponent } from './recipe-card/recipe-card.component';
 import { RecipeDetailComponent } from './recipe-detail/recipe-detail.component';
 import { LoadingComponent } from './loading/loading.component';
 import { AuthModule } from '@auth0/auth0-angular';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HeadersInterceptor } from './headers/headers.interceptor';
+import { AdvancedFiltersComponent } from './advanced-filters/advanced-filters.component';
+import { ScriptService } from './services/script.service';
 
 @NgModule({
   declarations: [
@@ -35,12 +38,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     SignupSectionComponent,
     FooterComponent,
     ProfileComponent,
-    SearchHistoryComponent,
+    SearchComponent,
     RecipesComponent,
     SignupPageComponent,
     RecipeCardComponent,
     RecipeDetailComponent,
-    LoadingComponent
+    LoadingComponent,
+    AdvancedFiltersComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,8 +64,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     }),
     BrowserAnimationsModule,
   ],
-  providers: [
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+    useClass: HeadersInterceptor,
+    multi: true,
+    
+  },
     ThemeService,
+    ScriptService
   ],
   bootstrap: [AppComponent]
 })

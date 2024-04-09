@@ -1,0 +1,7 @@
+<mat-form-field class="search-box" appearance="outline">
+  <mat-label>Search recipes</mat-label>
+  <input matInput type="text" [formControl]="recipeAutoComplete" [matAutocomplete]="auto" (keyup)="onEnterPressed()"/>
+  <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="recipeDisplay" (optionSelected)="onRecipeSelect($event)">
+    <mat-option *ngFor="let recipe of recipeAutoComplete$ | async" [value]="recipe"> {{ recipe.title }} </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

@@ -1,0 +1,24 @@
+.recipes-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-gap: 1.5em;
+    margin-bottom: 10%;
+    margin-top: 5%;
+  }
+
+mat-drawer-container {
+  background-color: var(--background-color) !important;
+  margin-bottom: 2.5em;
+  margin-top: 2.5em;
+}
+
+mat-drawer {
+  background-color: var(--background-color) !important;
+  color: var(--text-color) !important;
+  width: 20%;
+}
+
+.toggle {
+  color: var(--text-color) !important;
+  background-color: var(--background-color) !important;
+}
