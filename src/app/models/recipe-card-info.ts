@@ -3,5 +3,4 @@ export interface RecipeCardInfo {
     title: string;
     readyInMinutes: number;
     image: string;
-    maxReadyTime?: number;
 }

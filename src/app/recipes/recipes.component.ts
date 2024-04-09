@@ -68,7 +68,7 @@ export class RecipesComponent implements OnInit {
   onRecipeCardClicked(recipe: RecipeCardInfo) {
     this.router.navigate(['/recipe', recipe.id]);
   }
-
+  
   ngOnDestroy(): void {
     if (this.fixedRecipesSubscription) {
       this.fixedRecipesSubscription.unsubscribe();

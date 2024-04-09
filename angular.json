@@ -30,8 +30,7 @@
               "src/app/themes.scss"
             ],
             "scripts": [
-              "src/jquery-1.9.1.min.js",
-              "src/spoonacular-1.6.min.js"
+              
             ]
           },
           "configurations": {
