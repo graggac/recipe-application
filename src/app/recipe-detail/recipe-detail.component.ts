@@ -27,7 +27,6 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
   similarRecipes: any[] = [];
   nutritionVisualizationHtml?: SafeHtml;
   visualizationSubscription!: Subscription;
-  ingredientListInput: string = '';
   
   constructor(private route: ActivatedRoute, @Inject(DOCUMENT) private document: Document, private router: Router, private spoonacularService: SpoonacularService, private sanitizer: DomSanitizer) {}
 
@@ -37,29 +36,14 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
       if (!this.id) {
         this.router.navigateByUrl("/");
       }
+
       this.recipeSubscription = this.spoonacularService
         .getRecipe(this.id)
         .subscribe((res) => {
           this.recipe = res;
           this.updateNutrition();
         });     
-    
-        this.spoonacularService.visualizeNutrition(this.ingredientListInput, 2).subscribe(
-          (visualizationHtml: SafeHtml) => {
-            this.nutritionVisualizationHtml = visualizationHtml;
-          },
-        );
       
-      this.nutritionSubscription = this.spoonacularService
-        .getNutritionLabel(this.id)
-        .subscribe((res) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(res);
-          reader.onloadend = () => {
-            this.nutritionInfo = reader.result;
-          };
-        }); 
-
         this.spoonacularService.getSimilarRecipes(this.id).subscribe((res: any[]) => {
           const recipeIds = res.map((recipe: any) => recipe.id);
           forkJoin(recipeIds.map((id: number) => this.spoonacularService.getRecipe(id))).subscribe((detailedRecipes: any[]) => {
@@ -83,10 +67,17 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+  if (this.recipeSubscription) {
     this.recipeSubscription.unsubscribe();
+  }
+  if (this.nutritionSubscription) {
     this.nutritionSubscription.unsubscribe();
+  }
+  if (this.visualizationSubscription) {
     this.visualizationSubscription.unsubscribe();
   }
+}
+
 
   updateNutrition() {
     const ingredientList = this.recipe.extendedIngredients

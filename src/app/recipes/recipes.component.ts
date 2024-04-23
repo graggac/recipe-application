@@ -57,7 +57,7 @@ export class RecipesComponent implements OnInit {
   onSearch(searchTerm: RecipeCardInfo) {
     const title = searchTerm.title ?? '';
 
-    this.spoonacularService.getRecipeAutoComplete(title).subscribe((recipes: any[]) => {
+    this.spoonacularService.getRecipeAutoComplete(title, 3).subscribe((recipes: any[]) => {
       const recipeIds = recipes.map(recipe => recipe.id);
       forkJoin(recipeIds.map(id => this.spoonacularService.getRecipe(id))).subscribe((detailedRecipes: RecipeInfo[]) => {
         this.recipes = detailedRecipes;

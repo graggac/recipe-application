@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, delay, map } from 'rxjs';
 import { RecipeAutocomplete } from '../models/recipe-auto-complete';
 import { RecipeInfo } from '../models/recipe-detail-info';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
@@ -16,9 +16,9 @@ export class SpoonacularService {
 
     constructor(private http: HttpClient, private sanitizer: DomSanitizer) {}
 
-    getRecipeAutoComplete(query: string, amount: number = 5000): Observable<RecipeAutocomplete[]> {
+    getRecipeAutoComplete(query: string, amount: number = 25): Observable<RecipeAutocomplete[]> {
         const url = `https://${this.apiHost}/recipes/autocomplete?query=${query}&number=${amount}&apiKey=${this.apiKey}`;
-        return this.http.get<RecipeAutocomplete[]>(url);
+        return this.http.get<RecipeAutocomplete[]>(url)
     }
 
     getRecipe(id: number): Observable<any> {
@@ -53,15 +53,10 @@ export class SpoonacularService {
         return this.getRecipeAutoComplete(query);
     }
 
-    searchComplexRecipe(params: any, num: number = 5000): Observable<any[]> {
+    searchComplexRecipe(params: any, num: number = 100): Observable<any[]> {
         return this.getRequest('/recipes/complexSearch', {...params, number: num});
     }
 
-    getNutritionLabel(id: number, defaultCss: boolean = true, showOptionalNutrients: boolean = false, showZeroValues: boolean = false, showIngredients: boolean = false): Observable<Blob> {
-        const url = `https://${this.apiHost}/recipes/${id}/nutritionLabel.png?defaultCss=${defaultCss}&showOptionalNutrients=${showOptionalNutrients}&showZeroValues=${showZeroValues}&showIngredients=${showIngredients}&apiKey=${this.apiKey}`;
-        return this.http.get(url, { responseType: 'blob' });
-    }
-      
     getSimilarRecipes(id: number): Observable<any> {
         const url = `https://${this.apiHost}/recipes/${id}/similar?number=3&limitLicense=false&apiKey=${this.apiKey}`;
         return this.http.get(url);
@@ -80,5 +75,5 @@ export class SpoonacularService {
             return this.sanitizer.bypassSecurityTrustHtml(response);
           })
         );
-      }
+    }
 }

@@ -54,7 +54,7 @@ import { AdvancedFiltersComponent } from './advanced-filters/advanced-filters.co
     HttpClientModule,
     AuthModule.forRoot({
       domain: 'dev-2zlqky1xsanumqpq.us.auth0.com',
-      clientId: 'dk0rWzol64gPRrgPSQcNvxZgpDTB0mWp',
+      clientId: 'dk0rWzol64gPRrgPSQcNvxZgpDTB0mWp', 
       authorizationParams: {
         redirect_uri: window.location.origin
       }
